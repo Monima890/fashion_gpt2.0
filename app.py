@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask import Flask, request, jsonify, render_template, redirect, url_for, send_from_directory
 from flask_cors import CORS
 from forms import FashionForm
 import google.generativeai as genai
+import os
 
 
 import logging
@@ -92,10 +93,14 @@ def index():
             return render_template('result.html', recommendations=response)
         except ValueError as e:
             error_message = str(e)
-            return render_template('index.html', error_message=error_message)
+            return send_from_directory('', 'index.html', error_message=error_message)
 
-    return render_template('index.html')
+    return send_from_directory('', 'index.html')
 
-
+@app.route('/result', methods=['GET', 'POST'])
+def result():
+    recommendations = request.args.get('recommendations', '')
+    return render_template('result.html', recommendations=recommendations)
+    
 if __name__ == '__main__':
     app.run(debug=True)
